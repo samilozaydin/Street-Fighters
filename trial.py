@@ -70,7 +70,3 @@ while situation:
 
 pygame.quit()
 exit()
-
-
-fontum = pygame.font.SysFont("gsdgsd", 45)
-yazim = fontum.render("yazi", True, colors["patates"])
