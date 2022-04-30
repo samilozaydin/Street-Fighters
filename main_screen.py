@@ -34,6 +34,7 @@ def main_menu():
 
     situation = True
     while situation:
+        clock.tick(60)
         screen.fill("black")
         mouse_position = pygame.mouse.get_pos()
         screen.blit(img_bckgnd, img_bckgnd_coordinate)
@@ -56,7 +57,6 @@ def main_menu():
             respond.update(screen)
         events = pygame.event.get()
         for event in events:
-            clock.tick(60)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -70,6 +70,7 @@ def main_menu():
                     sys.exit()
         scl_group.update()
         scl_group.draw(screen)
+        # print(str(int(clock.get_fps())))
         pygame.display.update()
 
 
@@ -91,6 +92,7 @@ def credits():
     situation = True
     while situation:
         mouse_position = pygame.mouse.get_pos()
+        clock.tick(60)
 
         screen.fill("black")
         screen.blit(img_bckgnd, img_bckgnd_coordinate)
@@ -124,13 +126,12 @@ def credits():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if btn_exit.checkForInput(mouse_position):
                     main_menu()
-            scl_group.update()
-            scl_group.draw(screen)
 
-            screen.blit(credit_text_1, credit_text_1_coordinate)
-            screen.blit(credit_text_2, credit_text_2_coordinate)
-
-            pygame.display.update()
+        screen.blit(credit_text_1, credit_text_1_coordinate)
+        screen.blit(credit_text_2, credit_text_2_coordinate)
+        scl_group.update()
+        scl_group.draw(screen)
+        pygame.display.update()
 
 
 main_menu()
