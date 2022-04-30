@@ -1,7 +1,10 @@
 import pygame
 import sys
+
+from sympy import Q
 import button
 import scaleableImage
+import character
 
 pygame.init()
 
@@ -15,6 +18,7 @@ colors = {"white": (255, 255, 255),
           "blue": (0, 255, 0),
           "green": (0, 0, 255)}
 
+# create main menu images
 img_bckgnd = pygame.image.load("images/background.jpg")
 img_bckgnd_coordinate = (0, 0)
 img_bckgnd = pygame.transform.scale(img_bckgnd, (800, 800))
@@ -28,6 +32,15 @@ scl_img_bckgnd_text = scaleableImage.ScaleableImage(
 
 scl_group = pygame.sprite.Group(scl_img_bckgnd_text)
 clock = pygame.time.Clock()
+
+# create character
+ryu_idle = [pygame.image.load("images/characters/ryu/idle/idle_0.png"),
+            pygame.image.load("images/characters/ryu/idle/idle_1.png"),
+            pygame.image.load("images/characters/ryu/idle/idle_2.png"),
+            pygame.image.load("images/characters/ryu/idle/idle_3.png")]
+ryu = character.Character(ryu_idle, 20, 400)
+player = ryu
+chrc_group = pygame.sprite.Group(ryu)
 
 
 def main_menu():
@@ -80,11 +93,17 @@ def play():
     while situation:
         screen.fill("black")
 
-        play_font = pygame.font.SysFont("calibri", 32)
-        play_text = play_font.render("Play", True, colors["white"])
-        play_rect = play_text.get_rect(center=(640, 240))
-
-        screen.blit(play_text, play_rect)
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                player.animate()
+        chrc_group.update(0.1)
+        chrc_group.draw(screen)
+        clock.tick(60)
+        pygame.display.update()
 
 
 def credits():
@@ -118,6 +137,7 @@ def credits():
         for respond in [btn_exit]:
             respond.changeColor(mouse_position)
             respond.update(screen)
+
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
