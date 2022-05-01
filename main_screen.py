@@ -185,4 +185,4 @@ def music_situation(is_playing):
 
 
 main_menu()
-print("")
+print("sumer")
