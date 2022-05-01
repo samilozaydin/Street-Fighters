@@ -33,6 +33,10 @@ scl_img_bckgnd_text = scaleableImage.ScaleableImage(
 scl_group = pygame.sprite.Group(scl_img_bckgnd_text)
 clock = pygame.time.Clock()
 
+# create game screen
+img_stage_1 = pygame.image.load("images/stage_1.jpg")
+img_stage_1_coordinate = (0, 0)
+img_stage_1 = pygame.transform.scale(img_stage_1, (800, 800))
 # create character
 ryu_idle = [pygame.image.load("images/characters/ryu/idle/idle_0.png"),
             pygame.image.load("images/characters/ryu/idle/idle_1.png"),
@@ -42,9 +46,13 @@ ryu = character.Character(ryu_idle, 20, 400)
 player = ryu
 chrc_group = pygame.sprite.Group(ryu)
 
+# music parameter
+pygame.mixer.music.load("music/Intro.mp3")
+pygame.mixer.music.play(-1)
+
 
 def main_menu():
-
+    is_playing = True
     situation = True
     while situation:
         clock.tick(60)
@@ -65,7 +73,12 @@ def main_menu():
         btn_exit = button.Button(
             None, exit_pos, "Exit", play_font, colors["white"], colors["red"])
 
-        for respond in [btn_play, btn_credit, btn_exit]:
+        music_pos = (screen.get_rect().centerx+250,
+                     screen.get_rect().centerx+300)
+        btn_music = button.Button(pygame.image.load(
+            "images/music_button.jpg"), music_pos, "", play_font, colors["white"], colors["red"])
+
+        for respond in [btn_play, btn_credit, btn_exit, btn_music]:
             respond.changeColor(mouse_position)
             respond.update(screen)
         events = pygame.event.get()
@@ -78,6 +91,13 @@ def main_menu():
                     play()
                 if btn_credit.checkForInput(mouse_position):
                     credits()
+                if btn_music.checkForInput(mouse_position):
+
+                    if is_playing == False:
+                        is_playing = True
+                    else:
+                        is_playing = False
+                    music_situation(is_playing)
                 if btn_exit.checkForInput(mouse_position):
                     pygame.quit()
                     sys.exit()
@@ -94,14 +114,17 @@ def play():
         screen.fill("black")
 
         events = pygame.event.get()
+
+        screen.blit(img_stage_1, img_stage_1_coordinate)
+
         for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 player.animate()
-        chrc_group.update(0.1)
-        chrc_group.draw(screen)
+        # chrc_group.update(0.1)
+        # chrc_group.draw(screen)
         clock.tick(60)
         pygame.display.update()
 
@@ -133,7 +156,6 @@ def credits():
                     screen.get_rect().centery+175)
         btn_exit = button.Button(
             None, exit_pos, "Exit", pygame.font.SysFont("calibri", 36), colors["white"], colors["red"])
-
         for respond in [btn_exit]:
             respond.changeColor(mouse_position)
             respond.update(screen)
@@ -152,6 +174,14 @@ def credits():
         scl_group.update()
         scl_group.draw(screen)
         pygame.display.update()
+
+
+def music_situation(is_playing):
+
+    if is_playing == False:
+        pygame.mixer.music.pause()
+    else:
+        pygame.mixer.music.unpause()
 
 
 main_menu()

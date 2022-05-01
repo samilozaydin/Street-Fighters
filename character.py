@@ -12,9 +12,10 @@ class Character(pygame.sprite.Sprite):
         self.current_index = 0
         self.image = images[0]
         self.rect = self.image.get_rect()
+
         self.rect.topleft = [x, y]
 
-    def update(self,speed):
+    def update(self, speed):
         if self.is_animate == True:
             self.current_index += 0.2
             if self.current_index >= len(self.sprites):

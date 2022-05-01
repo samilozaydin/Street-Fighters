@@ -55,6 +55,7 @@ yazi_coordinate.center = (monster_1_coordinate.centerx,
 scaleable_2 = ScaleableImage(yazi_coordinate.center, yazi)
 group.add(scaleable_2)
 
+
 situation = True
 while situation:
     clock.tick(60)
