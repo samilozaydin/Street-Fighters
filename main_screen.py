@@ -10,7 +10,7 @@ pygame.init()
 
 # General Settings
 resolution = (800, 800)
-screen = pygame.display.set_mode(resolution)
+screen = pygame.display.set_mode(resolution, pygame.RESIZABLE)
 pygame.display.set_caption("Street Fighters!")
 
 colors = {"white": (255, 255, 255),
@@ -38,17 +38,51 @@ img_stage_1 = pygame.image.load("images/stage_1.jpg")
 img_stage_1_coordinate = (0, 0)
 img_stage_1 = pygame.transform.scale(img_stage_1, (800, 800))
 # create character
+
+
+def scale_images(images, x, y):
+    for i, image in enumerate(images):
+        images[i] = pygame.transform.scale(image, (x, y))
+
+
 ryu_idle = [pygame.image.load("images/characters/ryu/idle/idle_0.png"),
             pygame.image.load("images/characters/ryu/idle/idle_1.png"),
             pygame.image.load("images/characters/ryu/idle/idle_2.png"),
             pygame.image.load("images/characters/ryu/idle/idle_3.png")]
-ryu = character.Character(ryu_idle, 20, 400)
+
+ryu_move = [pygame.image.load("images/characters/ryu/move/move_0.png"),
+            pygame.image.load("images/characters/ryu/move/move_1.png"),
+            pygame.image.load("images/characters/ryu/move/move_2.png"),
+            pygame.image.load("images/characters/ryu/move/move_3.png"),
+            pygame.image.load("images/characters/ryu/move/move_4.png")]
+ryu_jump = [pygame.image.load("images/characters/ryu/jump/jump_0.png"),
+            pygame.image.load("images/characters/ryu/jump/jump_1.png"),
+            pygame.image.load("images/characters/ryu/jump/jump_2.png"),
+            pygame.image.load("images/characters/ryu/jump/jump_3.png"),
+            pygame.image.load("images/characters/ryu/jump/jump_4.png"),
+            pygame.image.load("images/characters/ryu/jump/jump_5.png"),
+            pygame.image.load("images/characters/ryu/jump/jump_6.png")]
+scale_images(ryu_idle, 132, 246)
+scale_images(ryu_move, 132, 246)
+scale_images(ryu_jump, 90, 273)
+
+ani_ryu = [ryu_idle, ryu_move, ryu_jump]
+
+ryu = character.Character(ani_ryu, 20, 400)
 player = ryu
 chrc_group = pygame.sprite.Group(ryu)
 
 # music parameter
 pygame.mixer.music.load("music/Intro.mp3")
 pygame.mixer.music.play(-1)
+
+
+def music_situation(is_playing):
+
+    if is_playing == False:
+        pygame.mixer.music.pause()
+    else:
+        pygame.mixer.music.unpause()
 
 
 def main_menu():
@@ -109,11 +143,20 @@ def main_menu():
 
 def play():
 
+    # statements
+    walk_right = False
+    walk_left = False
+    walk_up = False
+
+    jump_coef = 25
+    ani_num = 0
+
     situation = True
     while situation:
         screen.fill("black")
-
+        speed = 0.1
         events = pygame.event.get()
+        user_input = pygame.key.get_pressed()
 
         screen.blit(img_stage_1, img_stage_1_coordinate)
 
@@ -123,9 +166,54 @@ def play():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 player.animate()
-        # chrc_group.update(0.1)
-        # chrc_group.draw(screen)
+
+        if user_input[pygame.K_RIGHT] and not (walk_up):
+            ani_num = 1
+            speed = 0.25
+            walk_right = True
+            if walk_left:
+                ani_num = 1
+                walk_right = False
+                walk_left = False
+
+        if user_input[pygame.K_LEFT] and not (walk_up):
+            ani_num = 1
+            speed = 0.25
+            walk_left = True
+            if walk_right:
+                ani_num = 1
+                walk_right = False
+                walk_left = False
+
+        if walk_up is False and user_input[pygame.K_UP]:
+            ani_num = 2
+            speed = 0.25
+            walk_up = True
+
+        if player.current_index == 0:
+            ani_num = 0
+            speed = 0.1
+            if not walk_up:
+                walk_left = False
+                walk_right = False
+
+        if walk_up:
+            jumping(jump_coef)
+            jump_coef -= 1
+            if jump_coef < -25:
+                jump_coef = 25
+                walk_up = False
+                ani_num = 0
+
+        if walk_left:
+            movement(-2)
+        if walk_right:
+            movement(2)
+
+        chrc_group.update(speed, ani_num)
+        chrc_group.draw(screen)
         clock.tick(60)
+
         pygame.display.update()
 
 
@@ -176,13 +264,13 @@ def credits():
         pygame.display.update()
 
 
-def music_situation(is_playing):
+def movement(amount):
+    player.rect.topleft = (player.rect.x + float(amount), player.rect.y)
 
-    if is_playing == False:
-        pygame.mixer.music.pause()
-    else:
-        pygame.mixer.music.unpause()
+
+def jumping(amount):
+
+    player.rect.topleft = (player.rect.x, player.rect.y-float(amount))
 
 
 main_menu()
-print("sumer")
